@@ -2994,6 +2994,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Land pad
       objectReference: {fileID: 0}
+    - target: {fileID: 8448471982448311345, guid: 3568aa383e3838a4c95df28249cc28d2,
+        type: 3}
+      propertyPath: m_TagString
+      value: Finish
+      objectReference: {fileID: 0}
     - target: {fileID: 5118062301157927868, guid: 3568aa383e3838a4c95df28249cc28d2,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -3048,6 +3053,31 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4433991156006939481, guid: 3568aa383e3838a4c95df28249cc28d2,
+        type: 3}
+      propertyPath: m_TagString
+      value: Finish
+      objectReference: {fileID: 0}
+    - target: {fileID: 8916618601603704350, guid: 3568aa383e3838a4c95df28249cc28d2,
+        type: 3}
+      propertyPath: m_TagString
+      value: Finish
+      objectReference: {fileID: 0}
+    - target: {fileID: 1819724295118527185, guid: 3568aa383e3838a4c95df28249cc28d2,
+        type: 3}
+      propertyPath: m_TagString
+      value: Finish
+      objectReference: {fileID: 0}
+    - target: {fileID: 1964595412262786146, guid: 3568aa383e3838a4c95df28249cc28d2,
+        type: 3}
+      propertyPath: m_TagString
+      value: Finish
+      objectReference: {fileID: 0}
+    - target: {fileID: 570972756277320395, guid: 3568aa383e3838a4c95df28249cc28d2,
+        type: 3}
+      propertyPath: m_TagString
+      value: Finish
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 3568aa383e3838a4c95df28249cc28d2, type: 3}

@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class rocket : MonoBehaviour
 {
@@ -8,6 +9,8 @@ public class rocket : MonoBehaviour
     AudioSource audiosource;
     [SerializeField] float thruster = 100f;
     [SerializeField] float mainthruster = 100f;
+    enum State {alive, dying, transcending };
+    State state = State.alive;
     // Start is called before the first frame update
     void Start()
     {
@@ -18,30 +21,57 @@ public class rocket : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        Thrust();
-        Rotate();
-
+        if (state == State.alive)
+        {
+            Thrust();
+            Rotate();
+        }
     }
     void OnCollisionEnter(Collision collision)
     {
-        if (collision.gameObject.tag == "Friendly")
-        {
-            print("cool");
-        }
-        else
-        {
-            print("not cool scrub");
-        }
-        /*switch (collision.gameObject.tag)
+        /* if (state != State.alive) { return; }
+         if (collision.gameObject.tag == "Friendly")
+         {
+         }
+         else if (collision.gameObject.tag == "Finish")
+         {
+             state = State.transcending;
+             Invoke("LoadNextScene",1F);
+         }
+         else
+         {
+             state = State.dying;
+               Invoke("DyingPhase",1F);
+         }*/
+        switch (collision.gameObject.tag)
         {
             case "Friendly":
-                print("ok");
+                // do nothing
+                break;
+            case "Finish":
+                print("Hit finish"); //todo remove
+                state = State.transcending;
+                Invoke("LoadNextLevel", 1f); // parameterise time
                 break;
             default:
-                print("not ok");
+                print("Dead");
+                print("Hit something deadly");
+                state = State.dying;
+                Invoke("LoadFirstLevel", 1f); // parameterise time
                 break;
-        }*/
+        }
     }
+
+    private void LoadFirtLevel()
+    {
+        SceneManager.LoadScene(0);
+    }
+
+    private void LoadNextLevel()
+    {
+        SceneManager.LoadScene(1);
+    }
+
     private void Thrust()
     {
         if (Input.GetKey(KeyCode.Space))
