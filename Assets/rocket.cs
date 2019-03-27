@@ -6,7 +6,8 @@ public class rocket : MonoBehaviour
 {
     Rigidbody rigidbody;
     AudioSource audiosource;
-    public int rotatator = 10;
+    [SerializeField] float thruster = 100f;
+    [SerializeField] float mainthruster = 100f;
     // Start is called before the first frame update
     void Start()
     {
@@ -17,14 +18,36 @@ public class rocket : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        ProcessInput();
-    }
+        Thrust();
+        Rotate();
 
-    void ProcessInput()
+    }
+    void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject.tag == "Friendly")
+        {
+            print("cool");
+        }
+        else
+        {
+            print("not cool scrub");
+        }
+        /*switch (collision.gameObject.tag)
+        {
+            case "Friendly":
+                print("ok");
+                break;
+            default:
+                print("not ok");
+                break;
+        }*/
+    }
+    private void Thrust()
     {
         if (Input.GetKey(KeyCode.Space))
         {
-            rigidbody.AddRelativeForce(Vector3.up*Time.deltaTime);
+            float thrustaratator = Time.deltaTime * mainthruster;
+            rigidbody.AddRelativeForce(Vector3.up * thrustaratator);
             if (!audiosource.isPlaying)
             {
                 audiosource.Play();
@@ -34,15 +57,21 @@ public class rocket : MonoBehaviour
         {
             audiosource.Stop();
         }
+    }
 
-
+    void Rotate()
+    {
+        rigidbody.freezeRotation = true;
+        float rotatator = Time.deltaTime * thruster;
         if (Input.GetKey(KeyCode.A))
         {
-            transform.Rotate(Vector3.forward/* * Time.deltaTime*/);
+            transform.Rotate(Vector3.forward * rotatator);
         }
         else if (Input.GetKey(KeyCode.D))
         {
-            transform.Rotate(Vector3.back /* Time.deltaTime*/);
+            transform.Rotate(Vector3.back * rotatator);
         }
+        rigidbody.freezeRotation = false;
     }
+
 }
