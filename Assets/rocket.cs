@@ -15,6 +15,10 @@ public class rocket : MonoBehaviour
     [SerializeField] AudioClip deathaudio;
     [SerializeField] AudioClip winaudio;
 
+    [SerializeField] ParticleSystem thrusterparticle;
+    [SerializeField] ParticleSystem deathparticle;
+    [SerializeField] ParticleSystem winparticle;
+
     enum State {alive, dying, transcending };
     State state = State.alive;
     // Start is called before the first frame update
@@ -54,6 +58,7 @@ public class rocket : MonoBehaviour
         state = State.transcending;
         audiosource.Stop();
         audiosource.PlayOneShot(winaudio);
+        winparticle.Play();
         Invoke("LoadNextLevel", 1F);
     }
 
@@ -62,6 +67,7 @@ public class rocket : MonoBehaviour
         state = State.dying;
         audiosource.Stop();
         audiosource.PlayOneShot(deathaudio);
+        deathparticle.Play();
         Invoke("LoadFirstLevel", 1F);
     }
 
@@ -84,6 +90,7 @@ public class rocket : MonoBehaviour
         else
         {
             audiosource.Stop();
+            thrusterparticle.Stop();
         }
     }
 
@@ -95,6 +102,7 @@ public class rocket : MonoBehaviour
         {
             audiosource.PlayOneShot(thrusteraudio);
         }
+         thrusterparticle.Play();
     }
 
     void Rotate()
