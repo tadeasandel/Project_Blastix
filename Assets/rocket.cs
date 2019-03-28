@@ -7,8 +7,14 @@ public class rocket : MonoBehaviour
 {
     Rigidbody rigidbody;
     AudioSource audiosource;
+
     [SerializeField] float thruster = 100f;
     [SerializeField] float mainthruster = 100f;
+
+    [SerializeField] AudioClip thrusteraudio;
+    [SerializeField] AudioClip deathaudio;
+    [SerializeField] AudioClip winaudio;
+
     enum State {alive, dying, transcending };
     State state = State.alive;
     // Start is called before the first frame update
@@ -29,40 +35,37 @@ public class rocket : MonoBehaviour
     }
     void OnCollisionEnter(Collision collision)
     {
-        /* if (state != State.alive) { return; }
+         if (state != State.alive) { return; }
          if (collision.gameObject.tag == "Friendly")
          {
          }
          else if (collision.gameObject.tag == "Finish")
-         {
-             state = State.transcending;
-             Invoke("LoadNextScene",1F);
-         }
-         else
-         {
-             state = State.dying;
-               Invoke("DyingPhase",1F);
-         }*/
-        switch (collision.gameObject.tag)
         {
-            case "Friendly":
-                // do nothing
-                break;
-            case "Finish":
-                print("Hit finish"); //todo remove
-                state = State.transcending;
-                Invoke("LoadNextLevel", 1f); // parameterise time
-                break;
-            default:
-                print("Dead");
-                print("Hit something deadly");
-                state = State.dying;
-                Invoke("LoadFirstLevel", 1f); // parameterise time
-                break;
+            WinTrigger();
+        }
+        else
+        {
+            DeathTrigger();
         }
     }
 
-    private void LoadFirtLevel()
+    private void WinTrigger()
+    {
+        state = State.transcending;
+        audiosource.Stop();
+        audiosource.PlayOneShot(winaudio);
+        Invoke("LoadNextLevel", 1F);
+    }
+
+    private void DeathTrigger()
+    {
+        state = State.dying;
+        audiosource.Stop();
+        audiosource.PlayOneShot(deathaudio);
+        Invoke("LoadFirstLevel", 1F);
+    }
+
+    private void LoadFirstLevel()
     {
         SceneManager.LoadScene(0);
     }
@@ -76,16 +79,21 @@ public class rocket : MonoBehaviour
     {
         if (Input.GetKey(KeyCode.Space))
         {
-            float thrustaratator = Time.deltaTime * mainthruster;
-            rigidbody.AddRelativeForce(Vector3.up * thrustaratator);
-            if (!audiosource.isPlaying)
-            {
-                audiosource.Play();
-            }
+            ApplyThrust();
         }
         else
         {
             audiosource.Stop();
+        }
+    }
+
+    private void ApplyThrust()
+    {
+        float thrustaratator = Time.deltaTime * mainthruster;
+        rigidbody.AddRelativeForce(Vector3.up * thrustaratator);
+        if (!audiosource.isPlaying)
+        {
+            audiosource.PlayOneShot(thrusteraudio);
         }
     }
 
