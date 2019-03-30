@@ -14,10 +14,19 @@ public class rocket : MonoBehaviour
     [SerializeField] AudioClip thrusteraudio;
     [SerializeField] AudioClip deathaudio;
     [SerializeField] AudioClip winaudio;
+    [SerializeField] AudioClip onelifeaudio;
+    [SerializeField] AudioClip twolifesaudio;
+    [SerializeField] AudioClip threelifesaudio;
 
     [SerializeField] ParticleSystem thrusterparticle;
     [SerializeField] ParticleSystem deathparticle;
     [SerializeField] ParticleSystem winparticle;
+
+    [SerializeField] float leveload = 2f;
+
+    bool colisionmode = false;
+
+    [SerializeField] int lifecount = 3;
 
     enum State {alive, dying, transcending };
     State state = State.alive;
@@ -26,6 +35,9 @@ public class rocket : MonoBehaviour
     {
         rigidbody = GetComponent<Rigidbody>();
         audiosource = GetComponent<AudioSource>();
+        LifeCounter nc = new LifeCounter();
+        lifecount -= nc.lifeamount;
+        nc.lifeamount = lifecount;
     }
 
     // Update is called once per frame
@@ -36,12 +48,29 @@ public class rocket : MonoBehaviour
             Thrust();
             Rotate();
         }
+        if (Debug.isDebugBuild)
+        {
+            RespondToDebugKeys();
+        }
     }
+    private void RespondToDebugKeys()
+    {
+        if (Input.GetKeyDown(KeyCode.L))
+        {
+            LoadNextLevel();
+        }
+        if (Input.GetKeyDown(KeyCode.C))
+        {
+            colisionmode = !colisionmode;
+        }
+    }
+
     void OnCollisionEnter(Collision collision)
     {
-         if (state != State.alive) { return; }
+         if (state != State.alive || colisionmode) { return; }
          if (collision.gameObject.tag == "Friendly")
          {
+
          }
          else if (collision.gameObject.tag == "Finish")
         {
@@ -49,7 +78,32 @@ public class rocket : MonoBehaviour
         }
         else
         {
-            DeathTrigger();
+            if (lifecount >= 1)
+            {
+                LifeCounter nc = new LifeCounter();
+                nc.lifeamount--;
+                reloadtrigger();
+            }
+            else
+            {
+                DeathTrigger();
+            }
+        }
+    }
+
+    private void Lifenumber()
+    {
+        if (lifecount == 1)
+        {
+            audiosource.PlayOneShot(onelifeaudio);
+        }
+        if (lifecount == 2)
+        {
+            audiosource.PlayOneShot(twolifesaudio);
+        }
+        if (lifecount == 3)
+        {
+            audiosource.PlayOneShot(threelifesaudio);
         }
     }
 
@@ -59,16 +113,28 @@ public class rocket : MonoBehaviour
         audiosource.Stop();
         audiosource.PlayOneShot(winaudio);
         winparticle.Play();
-        Invoke("LoadNextLevel", 1F);
+        Invoke("LoadNextLevel", leveload);
     }
-
     private void DeathTrigger()
     {
         state = State.dying;
         audiosource.Stop();
         audiosource.PlayOneShot(deathaudio);
         deathparticle.Play();
-        Invoke("LoadFirstLevel", 1F);
+        Invoke("LoadFirstLevel", leveload);
+    }
+    private void reloadtrigger()
+    {
+        state = State.dying;
+        audiosource.Stop();
+        audiosource.PlayOneShot(deathaudio);
+        deathparticle.Play();
+        Invoke("ReloadCurrentLevel", leveload);
+    }
+
+    private void ReloadCurrentLevel()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 
     private void LoadFirstLevel()
@@ -78,7 +144,12 @@ public class rocket : MonoBehaviour
 
     private void LoadNextLevel()
     {
-        SceneManager.LoadScene(1);
+        int nextsceneindex = SceneManager.GetActiveScene().buildIndex + 1;
+        if (nextsceneindex == SceneManager.sceneCountInBuildSettings)
+        {
+            nextsceneindex = 0;
+        }
+        SceneManager.LoadScene(nextsceneindex);
     }
 
     private void Thrust()
@@ -107,17 +178,29 @@ public class rocket : MonoBehaviour
 
     void Rotate()
     {
-        rigidbody.freezeRotation = true;
         float rotatator = Time.deltaTime * thruster;
         if (Input.GetKey(KeyCode.A))
         {
-            transform.Rotate(Vector3.forward * rotatator);
+            rotatinganodatime(rotatator);
         }
         else if (Input.GetKey(KeyCode.D))
         {
-            transform.Rotate(Vector3.back * rotatator);
+            rotatinganodatime(-rotatator);
         }
-        rigidbody.freezeRotation = false;
     }
 
+    private void rotatinganodatime(float rotatator)
+    {
+        rigidbody.freezeRotation = true;
+        transform.Rotate(Vector3.forward * rotatator);
+        rigidbody.freezeRotation = false;
+    }
+}
+public class LifeCounter
+{
+    public LifeCounter()
+    {
+
+    }
+    public int lifeamount;
 }
